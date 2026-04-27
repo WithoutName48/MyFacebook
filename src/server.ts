@@ -1,11 +1,15 @@
-import express from 'express';
+import { sequelize } from './db.js';
+import { app } from './app.js';
 
-const app = express();
+const start = async () => {
+  await sequelize.authenticate();
+  await sequelize.sync();
 
-app.use(express.json());
+  app.listen(3000, () => {
+    console.log(
+      'Server running on http://localhost:3000',
+    );
+  });
+};
 
-const PORT: number = 3000;
-
-app.listen(PORT, () => {
-    console.log(`Server running on port: ${PORT}`);
-});
+start();
