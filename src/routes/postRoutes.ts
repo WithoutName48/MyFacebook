@@ -238,6 +238,39 @@ router.delete('/deletePost', async (req, res) => {
   }
 });
 
+router.get('/getImage', async (req, res) => {
+  try {
+    const { token, id_image } = req.body;
+
+    const id_user = await getUserFromToken(token);
+
+    if (!id_user) {
+      return res
+        .status(400)
+        .json({ error: 'token not valid' });
+    }
+
+    const image = await Image.findByPk(id_image);
+
+    if (!image) {
+      return res.status(400).json({
+        error: "image with this id doesn't exist",
+      });
+    }
+
+    res.json({
+      id_image: image.getDataValue('id_image'),
+      id_post: image.getDataValue('id_post'),
+      path: image.getDataValue('path'),
+      position: image.getDataValue('position'),
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
+
 router.post('/addImage', async (req, res) => {
   try {
     const { token, id_post } = req.body;
@@ -456,6 +489,39 @@ router.delete(
     }
   },
 );
+
+router.get('/getVideo', async (req, res) => {
+  try {
+    const { token, id_video } = req.body;
+
+    const id_user = await getUserFromToken(token);
+
+    if (!id_user) {
+      return res
+        .status(400)
+        .json({ error: 'token not valid' });
+    }
+
+    const video = await Video.findByPk(id_video);
+
+    if (!video) {
+      return res.status(400).json({
+        error: "video with this id doesn't exist",
+      });
+    }
+
+    res.json({
+      id_video: video.getDataValue('id_video'),
+      id_post: video.getDataValue('id_post'),
+      path: video.getDataValue('path'),
+      position: video.getDataValue('position'),
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
 
 router.post('/addVideo', async (req, res) => {
   try {

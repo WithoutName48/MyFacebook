@@ -64,6 +64,62 @@ describe('Post Images routes', () => {
   });
 
   /* =========================
+     GET IMAGE
+  ========================= */
+
+  it('should get image by id', async () => {
+    const imageRes = await request(app)
+      .post('/post/addImage')
+      .send({
+        token,
+        id_post,
+      });
+
+    const id_image = imageRes.body.id_image;
+
+    const res = await request(app)
+      .get('/post/getImage')
+      .send({
+        token,
+        id_image,
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.id_image).toBe(id_image);
+    expect(res.body.id_post).toBe(id_post);
+    expect(res.body.path).toBeDefined();
+    expect(res.body.position).toBe(0);
+  });
+
+  it('should fail getImage with invalid token', async () => {
+    const res = await request(app)
+      .get('/post/getImage')
+      .send({
+        token: 'fake-token',
+        id_image: 1,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe(
+      'token not valid',
+    );
+  });
+
+  it('should fail when image does not exist', async () => {
+    const res = await request(app)
+      .get('/post/getImage')
+      .send({
+        token,
+        id_image: 999999,
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe(
+      "image with this id doesn't exist",
+    );
+  });
+
+  /* =========================
      ADD IMAGE
   ========================= */
 

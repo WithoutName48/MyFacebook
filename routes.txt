@@ -273,6 +273,23 @@ res:
     success:
         delete this post from databases with all the images, videos, reactions and comments linked to this post
 
+GET /getImage
+req:
+    - token
+    - id_image
+res:
+    if token not valid (isn't in UserToken):
+        error: token not valid  
+    if id_image not found in database
+        error: image with this id doesn't exist
+    success:
+        return {
+            "id_image"
+            "id_post"
+            "path"
+            "position"
+        }
+
 POST /addImage
 req:
     - token
@@ -324,6 +341,38 @@ res:
     success:
         delete image from database, update the positon of other images belonging to this post appropriately
 
+GET /getVideo
+req:
+    - token
+    - id_video
+res:
+    if token not valid (isn't in UserToken):
+        error: token not valid  
+    if id_video not found in database
+        error: image with this id doesn't exist
+    success:
+        return {
+            "id_video"
+            "id_post"
+            "path"
+            "position"
+        }
+
+POST /addVideo
+req:
+    - token
+    - id_post
+res:
+    if token not valid (isn't in UserToken):
+        error: token not valid  
+    if id_post not found in database
+        error: post with this id doesn't exist
+    if post with this id_post doesn't belong to this user
+        error: this user doesn't own this post
+    success:
+        create video in database, as path choose randomly some video from /videos, as postion add the postion that is +1 than the biggest postion from other videos linked to this post
+        return id_video
+
 POST /editVideo
 req:
     - token
@@ -342,21 +391,6 @@ res:
     success:
         if new_path is given then change the path of video with new_path
         if new_postion is given then change the current postion of this video to new_postion. If there exists video with this new_positon then change the position of that video to -1
-
-POST /addVideo
-req:
-    - token
-    - id_post
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database
-        error: post with this id doesn't exist
-    if post with this id_post doesn't belong to this user
-        error: this user doesn't own this post
-    success:
-        create video in database, as path choose randomly some video from /videos, as postion add the postion that is +1 than the biggest postion from other videos linked to this post
-        return id_video
 
 DELETE /deleteVideo
 req:
