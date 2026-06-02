@@ -1,4 +1,4 @@
-POST /auth/register
+POST /auth/register <br>
 req:
     - login
     - password
