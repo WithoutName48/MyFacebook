@@ -603,147 +603,446 @@
 }
 ```
 
-DELETE /user/deleteWork
-req:
-    - token
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        delete user's work from database
+## DELETE `/user/deleteWork`
 
+### Request
 
+```json
+{
+  "token": "string"
+}
+```
 
+### Response
 
+#### Error
 
+```json
+{
+  "error": "token not valid"
+}
+```
 
+#### Success
 
+```json
+{
+  "message": "work deleted successfully"
+}
+```
 
+---
 
+# Posts
 
-GET /post/getPost
-req:
-    - token
-    - id_post
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database 
-        error: there is no post with this id in database
-    success:
-        return {
-            content,
-            date_created,
-            images (array of id_image linked to this post in sorted order based on positions),
-            videos (array of id_video linked to this post in sorted order based on positions),
-            post_reactions (as an array with key: type of reaction, and value: number of such reactions)
-        }
+## GET `/post/getPost`
 
-POST /post/editPostContent
-req:
-    - token
-    - id_post
-    - new_content
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database 
-        error: there is no post with this id in database
-    success:
-        change current content of post with new_content
+### Request
 
-POST /post/createPost
-req:
-    - token
-    - content
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if content empty
-        error: post must have content
-    success:
-        create post with this content, as a post_reactions linked to this post set all reactions to 0
-        return id_post
+```json
+{
+  "token": "string",
+  "id_post": "number"
+}
+```
 
-DELETE /post/deletePost
-req:
-    - token
-    - id_post
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database 
-        error: there is no post with this id in database
-    success:
-        delete this post from databases with all the images, videos, reactions and comments linked to this post
+### Response
 
-GET /post/getImage
-req:
-    - token
-    - id_image
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_image not found in database
-        error: image with this id doesn't exist
-    success:
-        return {
-            "id_image"
-            "id_post"
-            "path"
-            "position"
-        }
+#### Error
 
-POST /post/addImage
-req:
-    - token
-    - id_post
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database
-        error: post with this id doesn't exist
-    if post with this id_post doesn't belong to this user
-        error: this user doesn't own this post
-    success:
-        create image in database, as path choose randomly some image from /images, as postion add the postion that is +1 than the biggest postion from other images linked to this post
-        return id_image
+- Invalid token
 
-POST /post/editImage
-req:
-    - token
-    - id_post
-    - id_image
-    - new_path or new_position
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database
-        error: post with this id doesn't exist
-    if post with this id_post doesn't belong to this user
-        error: this user doesn't own this post
-    if there is no id_image belonging to this id_post
-        error: image with this id_image either completely doesn't exist or is not linked to this id_post
-    success:
-        if new_path is given then change the path of image with new_path
-        if new_postion is given then change the current postion of this image to new_postion. If there exists image with this new_positon then change the position of that image to -1
+```json
+{
+  "error": "token not valid"
+}
+```
 
-DELETE /post/deleteImage
-req:
-    - token
-    - id_post
-    - id_image
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database
-        error: post with this id doesn't exist
-    if post with this id_post doesn't belong to this user
-        error: this user doesn't own this post
-    if there is no image with this id_image belonging to post with this id_post:
-        error: image with this id_image either completely doesn't exist or is not linked to this id_post
-    success:
-        delete image from database, update the positon of other images belonging to this post appropriately
+- Post not found
+
+```json
+{
+  "error": "there is no post with this id in database"
+}
+```
+
+#### Success
+
+```json
+{
+  "content": "string",
+  "date_created": "datetime",
+  "images": [1, 2, 3],
+  "videos": [1, 2, 3],
+  "post_reactions": {
+    "like": 10,
+    "love": 5,
+    "haha": 2
+  }
+}
+```
+
+- `images` contains an array of `id_image` values sorted by position.
+- `videos` contains an array of `id_video` values sorted by position.
+- `post_reactions` contains reaction types as keys and counts as values.
+
+---
+
+## POST `/post/editPostContent`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number",
+  "new_content": "string"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "there is no post with this id in database"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "post content updated successfully"
+}
+```
+
+---
+
+## POST `/post/createPost`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "content": "string"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Empty content
+
+```json
+{
+  "error": "post must have content"
+}
+```
+
+#### Success
+
+```json
+{
+  "id_post": 123
+}
+```
+
+- Creates a new post.
+- Initializes all post reactions with a value of `0`.
+
+---
+
+## DELETE `/post/deletePost`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "there is no post with this id in database"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "post deleted successfully"
+}
+```
+
+- Deletes the post together with all linked:
+  - images
+  - videos
+  - reactions
+  - comments
+
+---
+
+## GET `/post/getImage`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_image": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Image not found
+
+```json
+{
+  "error": "image with this id doesn't exist"
+}
+```
+
+#### Success
+
+```json
+{
+  "id_image": 1,
+  "id_post": 123,
+  "path": "/images/example.jpg",
+  "position": 0
+}
+```
+
+---
+
+## POST `/post/addImage`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+- User does not own the post
+
+```json
+{
+  "error": "this user doesn't own this post"
+}
+```
+
+#### Success
+
+```json
+{
+  "id_image": 1
+}
+```
+
+- Creates a new image.
+- Chooses a random image path from `/images`.
+- Sets the image position to `max(position) + 1` among images linked to the post.
+
+---
+
+## POST `/post/editImage`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number",
+  "id_image": "number",
+  "new_path": "string",
+  "new_position": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+- User does not own the post
+
+```json
+{
+  "error": "this user doesn't own this post"
+}
+```
+
+- Image not linked to the post
+
+```json
+{
+  "error": "image with this id_image either completely doesn't exist or is not linked to this id_post"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "image updated successfully"
+}
+```
+
+Behavior:
+
+- If `new_path` is provided, the image path is updated.
+- If `new_position` is provided:
+  - The image position is changed to `new_position`.
+  - If another image already has that position, its position is set to `-1`.
+
+---
+
+## DELETE `/post/deleteImage`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number",
+  "id_image": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+- User does not own the post
+
+```json
+{
+  "error": "this user doesn't own this post"
+}
+```
+
+- Image not linked to the post
+
+```json
+{
+  "error": "image with this id_image either completely doesn't exist or is not linked to this id_post"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "image deleted successfully"
+}
+```
+
+- Deletes the image from the database.
+- Updates positions of the remaining images linked to the post accordingly.
 
 GET /post/getVideo
 req:
