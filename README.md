@@ -1044,144 +1044,424 @@ Behavior:
 - Deletes the image from the database.
 - Updates positions of the remaining images linked to the post accordingly.
 
-GET /post/getVideo
-req:
-    - token
-    - id_video
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_video not found in database
-        error: image with this id doesn't exist
-    success:
-        return {
-            "id_video"
-            "id_post"
-            "path"
-            "position"
-        }
+## GET `/post/getVideo`
 
-POST /post/addVideo
-req:
-    - token
-    - id_post
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database
-        error: post with this id doesn't exist
-    if post with this id_post doesn't belong to this user
-        error: this user doesn't own this post
-    success:
-        create video in database, as path choose randomly some video from /videos, as postion add the postion that is +1 than the biggest postion from other videos linked to this post
-        return id_video
+### Request
 
-POST /post/editVideo
-req:
-    - token
-    - id_post
-    - id_video
-    - new_path or new_position
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database
-        error: post with this id doesn't exist
-    if post with this id_post doesn't belong to this user
-        error: this user doesn't own this post
-    if there is no id_video belonging to this id_post
-        error: video with this id_video either completely doesn't exist or is not linked to this id_post
-    success:
-        if new_path is given then change the path of video with new_path
-        if new_postion is given then change the current postion of this video to new_postion. If there exists video with this new_positon then change the position of that video to -1
+```json
+{
+  "token": "string",
+  "id_video": "number"
+}
+```
 
-DELETE /post/deleteVideo
-req:
-    - token
-    - id_post
-    - id_video
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid 
-    if id_post not found in database
-        error: post with this id doesn't exist
-    if post with this id_post doesn't belong to this user
-        error: this user doesn't own this post
-    if there is no video with this id_video belonging to post with this id_post:
-        error: video with this id_video either completely doesn't exist or is not linked to this id_post
-    success:
-        delete video from database, update the positon of other videos belonging to this post appropriately
+### Response
 
-POST /post/changePostReactions
-req:
-    - token
-    - id_post
-    - reaction ("like" or "love" or "care" or "haha" or "wow" or "sad" or "angry")
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid 
-    if id_post not found in database
-        error: post with this id doesn't exist
-    success:
-        update PostReactions. Add +1 to appropriate field
-        update UserPostsReacions. set True to the appropriate field, with id_post from req
+#### Error
 
+- Invalid token
 
+```json
+{
+  "error": "token not valid"
+}
+```
 
+- Video not found
 
+```json
+{
+  "error": "video with this id doesn't exist"
+}
+```
 
+#### Success
 
+```json
+{
+  "id_video": 1,
+  "id_post": 123,
+  "path": "/videos/example.mp4",
+  "position": 0
+}
+```
 
+---
 
+## POST `/post/addVideo`
 
+### Request
 
-GET /post/comments/getComments
-req:
-    - token
-    - id_post
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database
-        error: post with this id doesn't exist
-    success:
-        return {
-            comments (array of comments)
-        }
+```json
+{
+  "token": "string",
+  "id_post": "number"
+}
+```
 
-GET /post/comments/getComment
-req:
-    - token
-    - id_comment
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_comment not found in database
-        error: comment with this id doesn't exist
-    success:
-        return {
-            id_user,
-            id_post,
-            id_comment_replied_to,
-            date_created,
-            content,
-            children (array of children of this comment sorted in descending order based on date_created)
-        }
+### Response
 
-POST /post/comments/createComment
-req:
-    - token
-    - id_post or id_comment_replied_to
-    - content
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if id_post not found in database
-        error: post with this id doesn't exist
-    if id_comment_replied_to not found in database
-        error: comment, which is the parent (replied to), with this id doesn't exist
-    success:
-        create comment with appropriate data
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+- User does not own the post
+
+```json
+{
+  "error": "this user doesn't own this post"
+}
+```
+
+#### Success
+
+```json
+{
+  "id_video": 1
+}
+```
+
+- Creates a new video.
+- Chooses a random video path from `/videos`.
+- Sets the video position to `max(position) + 1` among videos linked to the post.
+
+---
+
+## POST `/post/editVideo`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number",
+  "id_video": "number",
+  "new_path": "string",
+  "new_position": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+- User does not own the post
+
+```json
+{
+  "error": "this user doesn't own this post"
+}
+```
+
+- Video not linked to the post
+
+```json
+{
+  "error": "video with this id_video either completely doesn't exist or is not linked to this id_post"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "video updated successfully"
+}
+```
+
+Behavior:
+
+- If `new_path` is provided, the video path is updated.
+- If `new_position` is provided:
+  - The video position is changed to `new_position`.
+  - If another video already has that position, its position is set to `-1`.
+
+---
+
+## DELETE `/post/deleteVideo`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number",
+  "id_video": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+- User does not own the post
+
+```json
+{
+  "error": "this user doesn't own this post"
+}
+```
+
+- Video not linked to the post
+
+```json
+{
+  "error": "video with this id_video either completely doesn't exist or is not linked to this id_post"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "video deleted successfully"
+}
+```
+
+- Deletes the video from the database.
+- Updates positions of the remaining videos linked to the post accordingly.
+
+---
+
+## POST `/post/changePostReactions`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number",
+  "reaction": "like | love | care | haha | wow | sad | angry"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "reaction added successfully"
+}
+```
+
+Behavior:
+
+- Updates `PostReactions` by incrementing the selected reaction count by `1`.
+- Updates `UserPostsReactions` by setting the selected reaction field to `true` for the specified post.
+
+---
+
+# Comments
+
+## GET `/post/comments/getComments`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+#### Success
+
+```json
+{
+  "comments": []
+}
+```
+
+- Returns an array containing all comments for the specified post.
+
+---
+
+## GET `/post/comments/getComment`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_comment": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Comment not found
+
+```json
+{
+  "error": "comment with this id doesn't exist"
+}
+```
+
+#### Success
+
+```json
+{
+  "id_user": 1,
+  "id_post": 123,
+  "id_comment_replied_to": 45,
+  "date_created": "2026-06-02T12:00:00Z",
+  "content": "Comment content",
+  "children": []
+}
+```
+
+- `children` contains child comments sorted in descending order by `date_created`.
+
+---
+
+## POST `/post/comments/createComment`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_post": "number",
+  "id_comment_replied_to": "number",
+  "content": "string"
+}
+```
+
+> Either `id_post` or `id_comment_replied_to` must be provided.
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Post not found
+
+```json
+{
+  "error": "post with this id doesn't exist"
+}
+```
+
+- Parent comment not found
+
+```json
+{
+  "error": "comment, which is the parent (replied to), with this id doesn't exist"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "comment created successfully",
+  "id_comment": 1
+}
+```
+
+- Creates a comment with the provided content and appropriate parent/post relationship.
 
 DELETE /post/comments/deleteComment
 req:
