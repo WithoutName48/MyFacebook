@@ -1,203 +1,607 @@
-POST /auth/register 
-req: 
-    - login 
-    - password 
-    - repeat_password 
-    - email 
-res: 
-    if password != repeat_password 
-        error: "Passwords not matching" 
-    if login or email already exists: 
-        error: "(login | email) already exists"
-    success 
-        token, this token should be saved in Users_tokens 
+# Authentication
 
-POST /auth/login 
-req:  
-    - login or email
-    - password 
-res: 
-    if req data not matching with the ones in database:
-        error: wrong data
-    success: 
-        token, this token should be saved in Users_tokens 
+## POST `/auth/register`
 
-DELETE /auth/deleteToken 
-req:
-    -token 
-res: 
-    if token not found i database: 
-        error: token not found
-    success: 
-        token successfully deleted
+### Request
 
+```json
+{
+  "login": "string",
+  "password": "string",
+  "repeat_password": "string",
+  "email": "string"
+}
+```
 
+### Response
 
+#### Error
 
+- If `password != repeat_password`
 
+```json
+{
+  "error": "Passwords not matching"
+}
+```
 
+- If `login` or `email` already exists
 
+```json
+{
+  "error": "(login | email) already exists"
+}
+```
 
+#### Success
 
+```json
+{
+  "token": "string"
+}
+```
 
-GET /user/userProfile 
-req 
-    - token
-    - id_user 
-res: 
-    if token not valid (isn't in UserToken):
-        error: token not valid
-    if id_user not found in database
-        error: user with this id doesn't exist
-    success: 
-        return { 
-            name, 
-            surname, 
-            date_of_birth,  
-            current_place, 
-            hometown, 
-            relationship_status, 
-            education, 
-            work  
-        } 
+> The generated token should be saved in `Users_tokens`.
 
-POST /user/changePassword
-req:
-    - token
-    - password
-    - new_password
-    - repeat_new_password
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid
-    if user's password that has this token doesn't match password 
-        error: wrong password 
-    if new_password != repeat_new_password
-        erorr: new password doesn't match with the repeated one 
-    success:
-        change user's password in database to new_password 
+---
 
-POST /user/changeEmail
-req:
-    - token
-    - password
-    - new_email
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid
-    if user's password that has this token doesn't match password
-        error: wrong password
-    success:
-        change user's emial in database to new_email
+## POST `/auth/login`
 
-POST /user/changeDateOfBirth
-req:
-    - token
-    - new_date_of_birth
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    if new_date_of_birth wrong format:
-        error: new_date_of_birth wrong format
-    if new_date_of_birth date in the future:
-        error: new_date_of_birth can't be in the future
-    success:
-        change user's date_of_birth in database to new_date_of_birth
+### Request
 
-DELETE /user/deleteDateOfBirth
-req:
-    - token
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        delete user's date_of_birth from database
+```json
+{
+  "login_or_email": "string",
+  "password": "string"
+}
+```
 
-POST /user/changeCurrentPlace
-req:
-    - token
-    - new_current_place
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        change user's current_place in database to new_current_place
+### Response
 
-DELETE /user/deleteCurrentPlace
-req:
-    - token
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        delete user's current_place from database
+#### Error
 
-POST /user/changeHometown
-req:
-    - token
-    - new_hometown
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid 
-    success:
-        change user's hometown in database to new_hometown
+```json
+{
+  "error": "wrong data"
+}
+```
 
-DELETE /user/deleteHometown
-req:
-    - token
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        delete user's hometown from database
+#### Success
 
-POST /user/changeRelationshipStatus
-req:
-    - token
-    - new_relationship_status
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        change user's relationship_status in database to new_relationship_status
+```json
+{
+  "token": "string"
+}
+```
 
-DELETE /user/deleteRelationshipStatus
-req:
-    - token
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid 
-    success:
-        delete user's relationship_status from database
+> The generated token should be saved in `Users_tokens`.
 
-POST /user/changeEducation
-req:
-    - token
-    - new_education
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        change user's education in database to new_education
+---
 
-DELETE /user/deleteEducation
-req:
-    - token
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        delete user's education from database
+## DELETE `/auth/deleteToken`
 
-POST /user/changeWork
-req:
-    - token
-    - new_work
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid  
-    success:
-        change user's work in database to new_work
+### Request
+
+```json
+{
+  "token": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not found"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "token successfully deleted"
+}
+```
+
+---
+
+# User
+
+## GET `/user/userProfile`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "id_user": "number"
+}
+```
+
+### Response
+
+#### Error
+
+- If token is not valid:
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- If user does not exist:
+
+```json
+{
+  "error": "user with this id doesn't exist"
+}
+```
+
+#### Success
+
+```json
+{
+  "name": "string",
+  "surname": "string",
+  "date_of_birth": "date",
+  "current_place": "string",
+  "hometown": "string",
+  "relationship_status": "string",
+  "education": "string",
+  "work": "string"
+}
+```
+
+---
+
+## POST `/user/changePassword`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "password": "string",
+  "new_password": "string",
+  "repeat_new_password": "string"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Wrong password
+
+```json
+{
+  "error": "wrong password"
+}
+```
+
+- Passwords do not match
+
+```json
+{
+  "error": "new password doesn't match with the repeated one"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "password changed successfully"
+}
+```
+
+---
+
+## POST `/user/changeEmail`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "password": "string",
+  "new_email": "string"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Wrong password
+
+```json
+{
+  "error": "wrong password"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "email changed successfully"
+}
+```
+
+---
+
+## POST `/user/changeDateOfBirth`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "new_date_of_birth": "YYYY-MM-DD"
+}
+```
+
+### Response
+
+#### Error
+
+- Invalid token
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+- Invalid date format
+
+```json
+{
+  "error": "new_date_of_birth wrong format"
+}
+```
+
+- Date is in the future
+
+```json
+{
+  "error": "new_date_of_birth can't be in the future"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "date_of_birth changed successfully"
+}
+```
+
+---
+
+## DELETE `/user/deleteDateOfBirth`
+
+### Request
+
+```json
+{
+  "token": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "date_of_birth deleted successfully"
+}
+```
+
+---
+
+## POST `/user/changeCurrentPlace`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "new_current_place": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "current_place changed successfully"
+}
+```
+
+---
+
+## DELETE `/user/deleteCurrentPlace`
+
+### Request
+
+```json
+{
+  "token": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "current_place deleted successfully"
+}
+```
+
+---
+
+## POST `/user/changeHometown`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "new_hometown": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "hometown changed successfully"
+}
+```
+
+---
+
+## DELETE `/user/deleteHometown`
+
+### Request
+
+```json
+{
+  "token": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "hometown deleted successfully"
+}
+```
+
+---
+
+## POST `/user/changeRelationshipStatus`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "new_relationship_status": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "relationship_status changed successfully"
+}
+```
+
+---
+
+## DELETE `/user/deleteRelationshipStatus`
+
+### Request
+
+```json
+{
+  "token": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "relationship_status deleted successfully"
+}
+```
+
+---
+
+## POST `/user/changeEducation`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "new_education": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "education changed successfully"
+}
+```
+
+---
+
+## DELETE `/user/deleteEducation`
+
+### Request
+
+```json
+{
+  "token": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "education deleted successfully"
+}
+```
+
+---
+
+## POST `/user/changeWork`
+
+### Request
+
+```json
+{
+  "token": "string",
+  "new_work": "string"
+}
+```
+
+### Response
+
+#### Error
+
+```json
+{
+  "error": "token not valid"
+}
+```
+
+#### Success
+
+```json
+{
+  "message": "work changed successfully"
+}
+```
 
 DELETE /user/deleteWork
 req:
