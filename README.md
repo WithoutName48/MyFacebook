@@ -1,82 +1,82 @@
 POST /auth/register <br>
-req:
-    - login
-    - password
-    - repeat_password
-    - email
-res:
-    if password != repeat_password
-        error: "Passwords not matching"
-    if login or email already exists:
-        error: "(login | email) already exists"
-    success
-        token, this token should be saved in Users_tokens
+req: <br>
+    - login <br>
+    - password <br>
+    - repeat_password <br>
+    - email <br> 
+res: <br>
+    if password != repeat_password <br>
+        error: "Passwords not matching" <br>
+    if login or email already exists: <br>
+        error: "(login | email) already exists" <br>
+    success <br>
+        token, this token should be saved in Users_tokens <br>
 
-POST /auth/login
-req: 
-    - login or email
-    - password
-res:
-    if req data not matching with the ones in database:
-        error: wrong data
-    success:
-        token, this token should be saved in Users_tokens
+POST /auth/login <br>
+req:  <br>
+    - login or email <br>
+    - password <br>
+res: <br>
+    if req data not matching with the ones in database: <br>
+        error: wrong data <br>
+    success: <br>
+        token, this token should be saved in Users_tokens <br>
 
-DELETE /auth/deleteToken
-req: 
-    -token
-res:
-    if token not found i database:
-        error: token not found
-    success:
-        token successfully deleted
-
-
-
-
-
-
-
-
-
-
-GET /user/userProfile
-req
-    - token
-    - id_user
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid
-    if id_user not found in database
-        error: user with this id doesn't exist
-    success:
-        return {
-            name,
-            surname,
-            date_of_birth,
-            current_place,
-            hometown,
-            relationship_status,
-            education,
-            work
-        }
-
-POST /user/changePassword
-req:
-    - token
-    - password
-    - new_password
-    - repeat_new_password
-res:
-    if token not valid (isn't in UserToken):
-        error: token not valid
-    if user's password that has this token doesn't match password
-        error: wrong password
-    if new_password != repeat_new_password
-        erorr: new password doesn't match with the repeated one
-    success:
-        change user's password in database to new_password
-
+DELETE /auth/deleteToken <br>
+req: <br>
+    -token <br>
+res: <br>
+    if token not found i database: <br>
+        error: token not found <br>
+    success: <br>
+        token successfully deleted <br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+GET /user/userProfile <br>
+req <br>
+    - token <br>
+    - id_user <br>
+res: <br>
+    if token not valid (isn't in UserToken): <br>
+        error: token not valid <br>
+    if id_user not found in database <br>
+        error: user with this id doesn't exist <br>
+    success: <br>
+        return { <br>
+            name, <br>
+            surname, <br>
+            date_of_birth, <br> 
+            current_place, <br>
+            hometown, <br>
+            relationship_status, <br>
+            education, <br>
+            work <br> 
+        } <br>
+<br>
+POST /user/changePassword <br>
+req: <br>
+    - token <br>
+    - password <br>
+    - new_password <br>
+    - repeat_new_password <br>
+res: <br>
+    if token not valid (isn't in UserToken): <br>
+        error: token not valid <br>
+    if user's password that has this token doesn't match password <br>
+        error: wrong password <br>
+    if new_password != repeat_new_password <br>
+        erorr: new password doesn't match with the repeated one <br>
+    success: <br>
+        change user's password in database to new_password <br>
+<br>
 POST /user/changeEmail
 req:
     - token
