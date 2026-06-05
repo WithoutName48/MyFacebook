@@ -1,6 +1,6 @@
 # Frontend
 
-[GitHub repository for frontend](https://github.com/St0dent/facebook-api-frontend)
+[GitHub repository of frontend](https://github.com/St0dent/facebook-api-frontend)
 
 # Running the project
 
