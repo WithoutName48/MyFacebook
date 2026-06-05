@@ -47,7 +47,7 @@ This downloads all packages defined in `package.json`.
 
 ## Configure Environment Variables
 
-Create a `.env` file in /src, with the data as below.
+Create a `.env` file in `/src`, with the data as below.
 
 Example:
 
