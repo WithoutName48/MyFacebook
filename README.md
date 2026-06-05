@@ -1,3 +1,113 @@
+# Running the project
+
+## Prerequisites
+
+Make sure the following are installed:
+
+* Git
+* Node.js (includes npm)
+
+Check the versions:
+
+```bash
+git --version
+node --version
+npm --version
+```
+
+---
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/WithoutName48/MyFacebook.git
+```
+
+This creates a local copy of the project.
+
+---
+
+## Navigate to the Project Folder
+
+```bash
+cd MyFacebook
+```
+
+---
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+This downloads all packages defined in `package.json`.
+
+---
+
+## Configure Environment Variables
+
+Create a `.env` file, with the data as below.
+
+Example:
+
+```
+NODE_ENV=test
+PORT=3000
+```
+
+You can change the values if needed
+
+---
+
+## Run the Project in Development Mode
+
+```bash
+npm run dev
+```
+
+---
+
+## Build the Project
+
+```bash
+npm run build
+```
+
+This compiles TypeScript files into JavaScript and creates the `dist/` directory.
+
+---
+
+## Run the Compiled Application
+
+```bash
+npm start
+```
+
+---
+
+## Test the Application
+
+```bash
+npm test
+```
+
+---
+
+## Pull Future Updates
+
+After the repository has already been cloned, download the latest changes with:
+
+```bash
+git pull
+```
+
+If new dependencies were added, run:
+
+```bash
+npm install
+```
+
 # Authentication
 
 ## POST `/auth/register`
